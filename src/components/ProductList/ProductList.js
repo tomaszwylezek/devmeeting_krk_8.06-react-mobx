@@ -4,40 +4,20 @@ import { orderBy } from "lodash";
 import { Product } from "../Product/Product";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { store } from "../../stores/ProductStore";
+import { observer } from "mobx-react";
 
-export class ProductList extends Component {
+@observer
+class ProductList extends Component {
   state = {
-    products: [
-      { id: 0, name: "Apple", tags: ["food", "fruit"], price: 5 },
-      { id: 1, name: "Coffee", tags: ["food", "instant"], price: 3 },
-      {
-        id: 2,
-        name: "Apple mouse",
-        promoted: true,
-        tags: ["apple", "tech"],
-        price: 3
-      },
-      {
-        id: 3,
-        name: "Apple coffee",
-        promoted: true,
-        tags: ["apple", "tech"],
-        price: 8
-      }
-    ],
     sortedBy: "name",
     filter: "",
     ascSort: true
   };
 
   handleBuy = id => {
-    this.setState(previousState => {
-      const products = previousState.products.map(
-        p => (p.id === id ? { ...p, isSold: true } : p)
-      );
-
-      return { products };
-    });
+    const product = store.products.find(p => p.id === id);
+    product.isSold = true;
   };
 
   sortBy = sortedBy => {
@@ -62,33 +42,38 @@ export class ProductList extends Component {
       "btn-primary": this.state.sortedBy === sortText
     });
 
+  renderSortButtons = sortTypes =>
+    sortTypes.map(type => (
+      <button
+        key={type}
+        className={this.setSortClass(type)}
+        onClick={() => this.sortBy(type)}
+      >
+        {type[0].toUpperCase() + type.slice(1)}
+        {this.getSortIcon(type)}
+      </button>
+    ));
+
   render() {
-    const { products, ascSort, sortedBy, filter } = this.state;
-    const sortedProducts = orderBy(products, sortedBy, [
+    const { ascSort, sortedBy, filter } = this.state;
+
+    const sortedProducts = orderBy(store.products, sortedBy, [
       ascSort ? "asc" : "desc"
     ]).filter(({ name }) => name.toLowerCase().includes(filter.toLowerCase()));
 
     return (
       <div className="container mb-5">
-
         <div className="card card-header mb-3">
           <div>
             <h2>Sort by</h2>
             <div className="d-flex">
-              <button
-                className={this.setSortClass("name")}
-                onClick={() => this.sortBy("name")}
-              >
-                Name
-                {this.getSortIcon("name")}
-              </button>
-              <button
-                className={this.setSortClass("price")}
-                onClick={() => this.sortBy("price")}
-              >
-                Price
-                {this.getSortIcon("price")}
-              </button>
+              {this.renderSortButtons([
+                "name",
+                "price",
+                "id",
+                "promoted",
+                "isSold"
+              ])}
             </div>
           </div>
 
@@ -110,8 +95,8 @@ export class ProductList extends Component {
               }
             />
           </div>
-
         </div>
+
         <ul className="pl-0">
           {sortedProducts.map(({ id, name, promoted, tags, price, isSold }) => (
             <li key={id} className="card mb-3 p-3">
@@ -131,3 +116,5 @@ export class ProductList extends Component {
     );
   }
 }
+
+export { ProductList };
