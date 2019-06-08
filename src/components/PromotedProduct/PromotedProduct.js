@@ -2,13 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Tags } from "../Tags/Tags";
 
-export const Product = ({ id, name, onBuyClick, tags }) => {
+import styles from "./PromotedProduct.module.scss";
+
+export const PromotedProduct = ({ id, name, onBuyClick, tags }) => {
   const handleClick = () => {
     onBuyClick(id);
   };
-
   return (
-    <div>
+    <div className={styles.promoted}>
       {name}
       <button className="btn btn-primary" onClick={handleClick}>
         Buy
@@ -18,7 +19,7 @@ export const Product = ({ id, name, onBuyClick, tags }) => {
   );
 };
 
-Product.propTypes = {
+PromotedProduct.propTypes = {
   name: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.string)
 };
