@@ -2,17 +2,33 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Tags } from "../Tags/Tags";
 
-export const Product = ({ id, name, onBuyClick, tags }) => {
+import styles from "./Product.module.scss";
+
+export const Product = ({
+  id,
+  name,
+  onBuyClick,
+  tags,
+  promoted,
+  price,
+  isSold
+}) => {
   const handleClick = () => {
     onBuyClick(id);
   };
 
   return (
-    <div>
-      {name}
-      <button className="btn btn-primary" onClick={handleClick}>
-        Buy
-      </button>
+    <div className={promoted && styles.promoted}>
+      <div className="d-flex justify-content-between">
+        {name} - Actual price is: {price}
+        <button
+          className="btn btn-success"
+          disabled={isSold}
+          onClick={handleClick}
+        >
+          Buy
+        </button>
+      </div>
       {tags.length && <Tags tags={tags} />}
     </div>
   );
