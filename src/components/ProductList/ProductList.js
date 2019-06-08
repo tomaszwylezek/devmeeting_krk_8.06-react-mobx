@@ -44,7 +44,8 @@ class ProductList extends Component {
       filter,
       products,
       changeFilter,
-      buyProduct
+      buyProduct,
+      soldProductsNumber
     } = this.props.store;
 
     const sortedProducts = orderBy(products, sortedBy, [
@@ -99,6 +100,7 @@ class ProductList extends Component {
             </li>
           ))}
         </ul>
+        Sold {soldProductsNumber}
       </div>
     );
   }

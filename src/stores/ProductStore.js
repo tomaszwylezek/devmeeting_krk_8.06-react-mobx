@@ -1,4 +1,4 @@
-import { observable, action } from "mobx";
+import { observable, action, computed } from "mobx";
 
 class ProductStore {
   @observable
@@ -28,18 +28,25 @@ class ProductStore {
   @observable
   ascSort = true;
 
-  @action buyProduct = id => {
+  @action
+  buyProduct = id => {
     const product = this.products.find(p => p.id === id);
     product.isSold = true;
-  }
+  };
 
-  @action sortBy = sortedBy => {
+  @action
+  sortBy = sortedBy => {
     this.ascSort = this.sortedBy ? !this.ascSort : this.ascSort;
     this.sortedBy = sortedBy;
   };
 
-  @action changeFilter = value => {
-    this.filter = value
+  @action
+  changeFilter = value => {
+    this.filter = value;
+  };
+
+  @computed get soldProductsNumber() {
+    return this.products.filter(({ isSold }) => isSold).length ;
   }
 }
 
