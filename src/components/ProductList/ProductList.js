@@ -38,8 +38,6 @@ export class ProductList extends Component {
 
       return { products };
     });
-
-    console.log(id);
   };
 
   sortBy = sortedBy => {
@@ -50,6 +48,20 @@ export class ProductList extends Component {
     }));
   };
 
+  getSortIcon = sortText =>
+    this.state.sortedBy === sortText && (
+      <FontAwesomeIcon
+        icon={this.state.ascSort ? faArrowUp : faArrowDown}
+        className="ml-2"
+      />
+    );
+
+  setSortClass = sortText =>
+    classNames("btn mr-2", {
+      "btn-outline-primary": this.state.sortedBy !== sortText,
+      "btn-primary": this.state.sortedBy === sortText
+    });
+
   render() {
     const { products, ascSort, sortedBy, filter } = this.state;
     const sortedProducts = orderBy(products, sortedBy, [
@@ -58,42 +70,28 @@ export class ProductList extends Component {
 
     return (
       <div className="container mb-5">
-        <div className="card card-header">
+
+        <div className="card card-header mb-3">
           <div>
             <h2>Sort by</h2>
             <div className="d-flex">
               <button
-                className={classNames("btn mr-2", {
-                  ["btn-outline-primary"]: sortedBy !== "name",
-                  ["btn-primary"]: sortedBy === "name"
-                })}
+                className={this.setSortClass("name")}
                 onClick={() => this.sortBy("name")}
               >
                 Name
-                {sortedBy === "name" && (
-                  <FontAwesomeIcon
-                    icon={ascSort ? faArrowUp : faArrowDown}
-                    className="ml-2"
-                  />
-                )}
+                {this.getSortIcon("name")}
               </button>
               <button
-                className={classNames("btn mr-2", {
-                  ["btn-outline-primary"]: sortedBy !== "price",
-                  ["btn-primary"]: sortedBy === "price"
-                })}
+                className={this.setSortClass("price")}
                 onClick={() => this.sortBy("price")}
               >
                 Price
-                {sortedBy === "price" && (
-                  <FontAwesomeIcon
-                    icon={ascSort ? faArrowUp : faArrowDown}
-                    className="ml-2"
-                  />
-                )}
+                {this.getSortIcon("price")}
               </button>
             </div>
           </div>
+
           <div className="input-group my-3">
             <div className="input-group-prepend">
               <span className="input-group-text" id="basic-addon1">
@@ -103,7 +101,7 @@ export class ProductList extends Component {
             <input
               type="text"
               className="form-control"
-              placeholder="Username"
+              placeholder="Filter"
               value={filter}
               onChange={e =>
                 this.setState({
@@ -112,6 +110,7 @@ export class ProductList extends Component {
               }
             />
           </div>
+
         </div>
         <ul className="pl-0">
           {sortedProducts.map(({ id, name, promoted, tags, price, isSold }) => (
