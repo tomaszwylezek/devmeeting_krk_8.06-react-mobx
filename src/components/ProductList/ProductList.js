@@ -9,37 +9,28 @@ import { observer } from "mobx-react";
 
 @observer
 class ProductList extends Component {
-  state = {
-    sortedBy: "name",
-    filter: "",
-    ascSort: true
-  };
-
   handleBuy = id => {
     const product = store.products.find(p => p.id === id);
     product.isSold = true;
   };
 
   sortBy = sortedBy => {
-    this.setState(prevState => ({
-      sortedBy: sortedBy,
-      ascSort:
-        prevState.sortedBy === sortedBy ? !prevState.ascSort : prevState.ascSort
-    }));
+    store.ascSort = store.sortedBy ? !store.ascSort : store.ascSort;
+    store.sortedBy = sortedBy;
   };
 
   getSortIcon = sortText =>
-    this.state.sortedBy === sortText && (
+    store.sortedBy === sortText && (
       <FontAwesomeIcon
-        icon={this.state.ascSort ? faArrowUp : faArrowDown}
+        icon={store.ascSort ? faArrowUp : faArrowDown}
         className="ml-2"
       />
     );
 
   setSortClass = sortText =>
     classNames("btn mr-2", {
-      "btn-outline-primary": this.state.sortedBy !== sortText,
-      "btn-primary": this.state.sortedBy === sortText
+      "btn-outline-primary": store.sortedBy !== sortText,
+      "btn-primary": store.sortedBy === sortText
     });
 
   renderSortButtons = sortTypes =>
@@ -55,9 +46,9 @@ class ProductList extends Component {
     ));
 
   render() {
-    const { ascSort, sortedBy, filter } = this.state;
+    const { ascSort, sortedBy, filter, products } = store;
 
-    const sortedProducts = orderBy(store.products, sortedBy, [
+    const sortedProducts = orderBy(products, sortedBy, [
       ascSort ? "asc" : "desc"
     ]).filter(({ name }) => name.toLowerCase().includes(filter.toLowerCase()));
 
@@ -88,11 +79,7 @@ class ProductList extends Component {
               className="form-control"
               placeholder="Filter"
               value={filter}
-              onChange={e =>
-                this.setState({
-                  filter: e.target.value
-                })
-              }
+              onChange={e => (store.filter = e.target.value)}
             />
           </div>
         </div>

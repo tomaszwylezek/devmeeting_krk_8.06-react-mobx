@@ -22,6 +22,11 @@ class ProductStore {
   ];
   @observable
   sortedBy = "name";
+
+  @observable
+  filter = "";
+  @observable
+  ascSort = true;
 }
 
 export const store = new ProductStore();
