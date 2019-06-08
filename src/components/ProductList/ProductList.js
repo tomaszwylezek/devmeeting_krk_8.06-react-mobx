@@ -5,32 +5,24 @@ import { Product } from "../Product/Product";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
 import { store } from "../../stores/ProductStore";
-import { observer } from "mobx-react";
+import { observer, inject } from "mobx-react";
+import { toJS } from "mobx";
 
+@inject("store")
 @observer
 class ProductList extends Component {
-  handleBuy = id => {
-    const product = store.products.find(p => p.id === id);
-    product.isSold = true;
-  };
-
-  sortBy = sortedBy => {
-    store.ascSort = store.sortedBy ? !store.ascSort : store.ascSort;
-    store.sortedBy = sortedBy;
-  };
-
   getSortIcon = sortText =>
     store.sortedBy === sortText && (
       <FontAwesomeIcon
-        icon={store.ascSort ? faArrowUp : faArrowDown}
+        icon={this.props.store.ascSort ? faArrowUp : faArrowDown}
         className="ml-2"
       />
     );
 
   setSortClass = sortText =>
     classNames("btn mr-2", {
-      "btn-outline-primary": store.sortedBy !== sortText,
-      "btn-primary": store.sortedBy === sortText
+      "btn-outline-primary": this.props.store.sortedBy !== sortText,
+      "btn-primary": this.props.store.sortedBy === sortText
     });
 
   renderSortButtons = sortTypes =>
@@ -38,7 +30,7 @@ class ProductList extends Component {
       <button
         key={type}
         className={this.setSortClass(type)}
-        onClick={() => this.sortBy(type)}
+        onClick={() => this.props.store.sortBy(type)}
       >
         {type[0].toUpperCase() + type.slice(1)}
         {this.getSortIcon(type)}
@@ -46,12 +38,20 @@ class ProductList extends Component {
     ));
 
   render() {
-    const { ascSort, sortedBy, filter, products } = store;
+    const {
+      ascSort,
+      sortedBy,
+      filter,
+      products,
+      changeFilter,
+      buyProduct
+    } = this.props.store;
 
     const sortedProducts = orderBy(products, sortedBy, [
       ascSort ? "asc" : "desc"
     ]).filter(({ name }) => name.toLowerCase().includes(filter.toLowerCase()));
 
+    console.log(toJS(store));
     return (
       <div className="container mb-5">
         <div className="card card-header mb-3">
@@ -79,7 +79,7 @@ class ProductList extends Component {
               className="form-control"
               placeholder="Filter"
               value={filter}
-              onChange={e => (store.filter = e.target.value)}
+              onChange={e => changeFilter(e.target.value)}
             />
           </div>
         </div>
@@ -94,7 +94,7 @@ class ProductList extends Component {
                 name={name}
                 tags={tags}
                 promoted={promoted}
-                onBuyClick={this.handleBuy}
+                onBuyClick={buyProduct}
               />
             </li>
           ))}

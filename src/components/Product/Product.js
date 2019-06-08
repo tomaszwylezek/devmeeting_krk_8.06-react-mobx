@@ -10,7 +10,6 @@ export const Product = observer(
       onBuyClick(id);
     };
 
-    console.log('hi')
     return (
       <div className={promoted && styles.promoted}>
         <div className="d-flex justify-content-between">
